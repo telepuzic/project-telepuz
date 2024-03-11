@@ -14,7 +14,7 @@ def drawText(surface, color, text, where, font_name="Arial", font_size=16):
 all_sprites = pg.sprite.Group()
 
 class Stations(pg.sprite.Sprite):
-    def __init__(self, coord, color, name):
+    def __init__(self, coord, color, name, i):
         super().__init__(all_sprites)
         self.name = name
         self.coord = coord
@@ -25,6 +25,7 @@ class Stations(pg.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = coord[0]
         self.rect.y = coord[1]
+        self.i = i
 
     def clck(self, pos, x, y):
         if self.rect.collidepoint(pos):
