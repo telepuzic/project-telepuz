@@ -2,6 +2,8 @@ import pygame as pg
 
 from collections import deque
 
+import heapq
+
 
 def bfs(graph, st, finish): # реализация bfs с выводом кратчайшего пути
     q = deque([[st]])
@@ -24,6 +26,24 @@ def bfs(graph, st, finish): # реализация bfs с выводом кра�
     return None
 
 
+def dijkstra(gr, st, finish):  # реализация dijkstra с выводом кратчайшего пути
+    queue = [(False, st, [])]
+    visited = set()
+
+    while queue:
+        (val, ver, path) = heapq.heappop(queue)
+        if ver not in visited:
+            visited.add(ver)
+            path = path + [ver]
+            if ver == finish:
+                return path
+            for curr_ver, c in gr.get(ver, ()):
+                if curr_ver not in visited:
+                    heapq.heappush(queue, (val + c, curr_ver, path))
+
+    return None
+
+
 def drawText(surface, color, text, where, font_name="arial", font_size=14): # реализация функции drawText для вывода текста на экран
     font = pg.font.SysFont(font_name, font_size)
     text_surface = font.render(text, True, color)
@@ -35,21 +55,26 @@ def drawText(surface, color, text, where, font_name="arial", font_size=14): # р
     surface.blit(text_surface, text_rect)
 
 
-# задание графа списком смежности
-gr = [[1],
-      [0, 2],
-      [1, 3, 7],
-      [2, 4],
-      [3, 5, 8, 12],
-      [4, 6],
-      [5],
-      [2, 8],
-      [4, 7, 9, 11],
-      [8],
-      [11],
-      [10, 8],
-      [4, 13],
-      [12]]
+# задание графа списком смежности с весами
+gr = {
+    0 : [(1, 5)],
+    1 : [(0, 5), (2, 4)],
+    2 : [(1, 4), (3, 4), (14, 3)],
+    3 : [(2, 4), (4, 3)],
+    4 : [(3, 3), (5, 4), (16, 3)],
+    5 : [(4, 4), (6, 4)],
+    6 : [(5, 4)],
+    7 : [(14, 6), (15, 6)],
+    8 : [(15, 5), (16, 4), (11, 4)],
+    9 : [(15, 7)],
+    10 : [(11, 5)],
+    11 : [(10, 5), (8, 4)],
+    12 : [(16, 4), (13, 4)],
+    13 : [(12, 4)],
+    14 : [(2, 3), (7, 6)],
+    15 : [(8, 5), (7, 6), (9, 7)],
+    16 : [(4, 3), (8, 4), (12, 4)]
+}
 
 # инициализация font
 pg.font.init()
@@ -150,7 +175,7 @@ while running:
                             quantity += 1
                         # если в параметрах есть и старт и финиш, то найдем и выведем кратчайший путь
                         if quantity == 2:
-                            k = bfs(gr, st, finish)
+                            k = dijkstra(gr, st, finish)
                             for w in k:
                                 pg.draw.rect(screen, (219, 112, 147), b[w])
                                 screen.blit(surf, pg.Rect(a[w][0], a[w][1], 50, 50))
